@@ -1,0 +1,5 @@
+mocha_istanbul: test
+
+eslint:
+  - src/**/*.js
+  - test/**/*.js

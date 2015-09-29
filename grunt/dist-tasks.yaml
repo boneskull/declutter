@@ -1,0 +1,10 @@
+babel:
+  options:
+    sourceMap: true
+  files:
+    dist/index.js: src/index.js
+    bin/declutter.js: src/cli.js
+
+clean:
+  - dist/
+  - bin/
