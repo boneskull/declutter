@@ -39,7 +39,7 @@
     "3d-extensions": "^1.0.0",
     "archive-extensions": "^1.0.0",
     "audio-extensions": "0.0.0",
-    "bluebird": "^2.10.1",
+    "bluebird": "^3.0.0",
     "compressed-extensions": "^1.0.1",
     "debug": "^2.2.0",
     "glob": "^5.0.15",
