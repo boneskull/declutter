@@ -57,7 +57,7 @@ const exts = _({
     'woff'
   ]
 })
-  .mapValues(value => _.map(value, (extension) => extension.replace('.', '')))
+  .mapValues(value => _.map(value, extension => extension.replace('.', '')))
   .sort()
   .value();
 
@@ -86,7 +86,7 @@ function extname(filename) {
 }
 
 function declutter(directory, opts) {
-  _.defaults(opts, {
+  opts = _.defaults(opts || {}, {
     dryRun: false,
     debug: false
   });
