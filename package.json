@@ -1,6 +1,6 @@
 {
   "name": "declutter",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Automatically sort files into directories",
   "license": "MIT",
   "repository": "https://github.com/boneskull/declutter.git",
