@@ -1,9 +1,8 @@
 env:
   node: true
-
-  es6: true
-
   mocha: true
+  es6: true
+parser: babel-eslint
 rules:
   # errors
   comma-dangle: 2
@@ -90,7 +89,7 @@ rules:
   no-self-compare: 2
   no-sequences: 2
   no-throw-literal: 2
-  no-unused-expressions: 0
+  no-unused-expressions: 2
   no-useless-call: 2
   no-void: 2
   no-warning-comments: 0
@@ -111,7 +110,7 @@ rules:
   no-delete-var: 2
   no-label-var: 2
   no-shadow-restricted-names: 2
-  no-shadow: 2
+  no-shadow: 1
   no-undef-init: 2
   no-undef: 2
   no-undefined: 2
@@ -152,7 +151,7 @@ rules:
     - never
   consistent-this: 0
   eol-last: 2
-  func-names: 0
+  func-names: 1
   func-style:
     - 2
     - declaration
@@ -169,12 +168,14 @@ rules:
     - 2
     -
       beforeBlockComment: true
-      beforeLineComment: true
+      beforeLineComment: false
   linebreak-style:
     - 2
     - unix
-  max-nested-callbacks: 0
-  new-cap: 2
+  max-nested-callbacks:
+    - 2
+    - 3
+  new-cap: 0
   new-parens: 2
   newline-after-var: 0
   no-array-constructor: 0
@@ -210,13 +211,16 @@ rules:
     - never
   quote-props: 0
   quotes: 0
+  require-jsdoc: 0
   id-match: 0
   semi-spacing:
     - 2
     -
       before: false
       after: true
-  semi: 2
+  semi:
+    - 2
+    - always
   sort-vars: 0
   space-after-keywords:
     - 2
@@ -236,7 +240,17 @@ rules:
   spaced-comment: 1
   wrap-regex: 0
 
-  # es6 TODO
+  # es6
+  arrow-parens:
+    - 1
+    - as-needed
+  arrow-spacing: 2
+  no-var: 2
+  prefer-arrow-callback: 1
+  prefer-const: 1
+  prefer-template: 1
+
+  # legacy
   max-len:
     - 2
     - 80
@@ -245,8 +259,3 @@ rules:
     - 4
   no-bitwise: 1
   no-plusplus: 0
-
-globals:
-  Promise: true
-  sinon: true
-  expect: true
