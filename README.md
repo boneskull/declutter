@@ -31,10 +31,6 @@ Options:
   --help, -h  Show help                                                [boolean]
 ```
 
-## API
-
-`declutter` exports a single function which accepts two parameters; the first is the directory to operate on, and the second is an options object corresponding to the CLI's flags.
-
 ## Config File Syntax
 
 To configure declutter, you want to create a `.declutter` file in the directory you want decluttered.  This is a [YAML](https://en.wikipedia.org/wiki/Yaml) file, FWIW.
@@ -56,7 +52,7 @@ This will move all BitTorrent (`*.torrent`) into the `torrent/` subdir, and all 
 
 Any globs here *will override the default settings*, which are pulled from a swath of `foo-extension` modules on npm.
 
-### Defaults
+## Defaults
 
 Extensions are sorted into categories; each category corresponds to a subdirectory.
 
@@ -72,6 +68,10 @@ Extensions are sorted into categories; each category corresponds to a subdirecto
 - Subtitles: `subs/`
 
 > TODO: Compile a list of source code file extensions; publish this as a module & use it to create a "code" category.
+
+## API
+
+`declutter` exports a single function which accepts two parameters; the first is the directory to operate on, and the second is an options object corresponding to the CLI's flags.
 
 ## Development
 
