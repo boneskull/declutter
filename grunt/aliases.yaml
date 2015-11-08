@@ -1,3 +1,7 @@
 test:
   - eslint:test
 
+build:
+  - clean:dist
+  - babel:dist
+  - chmod:dist

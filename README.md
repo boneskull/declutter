@@ -49,6 +49,13 @@ Example:
 
 Any globs here will override the default settings, which are pulled from a swath of `foo-extension` modules on npm.
 
+## Development
+
+1.  `git clone` this repo.
+2.  Navigate to working copy and execute `npm install`.
+3.  Execute `npm run build`, which runs the source through [babel](https://babeljs.io).
+4.  (Optional) execute `npm link`.
+
 ## License
 
 © 2015 [Christopher Hiller](https://boneskull.com).  Licensed MIT.

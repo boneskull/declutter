@@ -1,114 +1,50 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
+var _ = require('lodash');
+var pkg = require('../package.json');
+var threeD = require('3d-extensions');
+var archive = require('archive-extensions');
+var compressed = require('compressed-extensions');
+var audio = require('audio-extensions');
+var image = require('image-extensions');
+var video = require('video-extensions');
+var text = require('text-extensions');
+var subtitle = require('subtitle-extensions');
+var path = require('path');
+var isGlob = require('is-glob');
+var Promise = require('bluebird');
+var fs = Promise.promisifyAll(require('graceful-fs'));
+var _debug = require('debug');
+var glob = Promise.promisify(require('glob'));
+var mv = Promise.promisify(require('mv'));
+var mkdirp = Promise.promisify(require('mkdirp'));
+var yaml = require('js-yaml');
+var stringify = _.partialRight(require('stringify-object'), {
+  indent: '  ',
+  singleQuotes: false
 });
-exports['default'] = declutter;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _lodash = require('lodash');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _packageJson = require('../package.json');
-
-var _packageJson2 = _interopRequireDefault(_packageJson);
-
-var _dExtensions = require('3d-extensions');
-
-var _dExtensions2 = _interopRequireDefault(_dExtensions);
-
-var _archiveExtensions = require('archive-extensions');
-
-var _archiveExtensions2 = _interopRequireDefault(_archiveExtensions);
-
-var _compressedExtensions = require('compressed-extensions');
-
-var _compressedExtensions2 = _interopRequireDefault(_compressedExtensions);
-
-var _audioExtensions = require('audio-extensions');
-
-var _audioExtensions2 = _interopRequireDefault(_audioExtensions);
-
-var _imageExtensions = require('image-extensions');
-
-var _imageExtensions2 = _interopRequireDefault(_imageExtensions);
-
-var _videoExtensions = require('video-extensions');
-
-var _videoExtensions2 = _interopRequireDefault(_videoExtensions);
-
-var _textExtensions = require('text-extensions');
-
-var _textExtensions2 = _interopRequireDefault(_textExtensions);
-
-var _subtitleExtensions = require('subtitle-extensions');
-
-var _subtitleExtensions2 = _interopRequireDefault(_subtitleExtensions);
-
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
-var _isGlob = require('is-glob');
-
-var _isGlob2 = _interopRequireDefault(_isGlob);
-
-var _bluebird = require('bluebird');
-
-var _bluebird2 = _interopRequireDefault(_bluebird);
-
-var _gracefulFs = require('graceful-fs');
-
-var _gracefulFs2 = _interopRequireDefault(_gracefulFs);
-
-var _debug2 = require('debug');
-
-var _debug3 = _interopRequireDefault(_debug2);
-
-var _glob2 = require('glob');
-
-var _glob3 = _interopRequireDefault(_glob2);
-
-var _mv2 = require('mv');
-
-var _mv3 = _interopRequireDefault(_mv2);
-
-var _mkdirp2 = require('mkdirp');
-
-var _mkdirp3 = _interopRequireDefault(_mkdirp2);
-
-var _jsYaml = require('js-yaml');
-
-var _jsYaml2 = _interopRequireDefault(_jsYaml);
-
-var glob = _bluebird2['default'].promisify(_glob3['default']);
-var fs = _bluebird2['default'].promisifyAll(_gracefulFs2['default']);
-var mv = _bluebird2['default'].promisify(_mv3['default']);
-var mkdirp = _bluebird2['default'].promisify(_mkdirp3['default']);
 
 var configFile = '.declutter.yml';
 
-var exts = (0, _lodash2['default'])({
-  '3d': _dExtensions2['default'],
-  archive: _lodash2['default'].unique(_archiveExtensions2['default'].concat(_compressedExtensions2['default'])).concat(['pkg', 'bin']),
-  audio: _audioExtensions2['default'],
-  image: _imageExtensions2['default'],
-  video: _videoExtensions2['default'],
-  text: _textExtensions2['default'],
-  subtitle: _subtitleExtensions2['default'],
+var exts = _({
+  '3d': threeD,
+  archive: _(archive).concat(compressed).unique().concat(['pkg', 'bin']).value(),
+  audio: audio,
+  image: image,
+  video: video,
+  text: text,
+  subtitle: subtitle,
   document: ['pdf', 'doc', 'rtf', 'xls', 'xlsx', 'docx', 'ppt', 'pptx'],
   application: ['exe', 'app'],
   font: ['ttf', 'woff']
 }).mapValues(function (value) {
-  return _lodash2['default'].map(value, function (extension) {
+  return _.map(value, function (extension) {
     return extension.replace('.', '');
   });
 }).sort().value();
 
-var allExts = (0, _lodash2['default'])(exts).map(function (extensions, dest) {
-  return _lodash2['default'].map(extensions, function (extension) {
+var allExts = _(exts).map(function (extensions, dest) {
+  return _.map(extensions, function (extension) {
     return [extension, dest];
   });
 }).flatten().object().sort().value();
@@ -127,80 +63,57 @@ var defaultDestinations = {
 };
 
 function extname(filename) {
-  return _path2['default'].extname(filename).substring(1).toLowerCase();
+  return path.extname(filename).substring(1).toLowerCase();
 }
 
 function declutter(directory, opts) {
-  function verbose() {
-    if (opts.debug || opts.verbose) {
-      console.log.apply(console, arguments);
-    }
-  }
-
-  console.log('Decluttering ' + directory + '...');
-
-  _lodash2['default'].defaults(opts, {
+  _.defaults(opts, {
     dryRun: false,
-    verbose: false,
     debug: false
   });
 
   if (opts.debug) {
-    _debug3['default'].enable(_packageJson2['default'].name);
+    _debug.enable(pkg.name);
   }
-  var debug = (0, _debug3['default'])(_packageJson2['default'].name);
 
-  //const globs = _.pick(destinations, (value, key) => isGlob(key));
-
-  //
-  //return Promise.map(globs, (globname) => {
-  //        return glob(globname);
-  //      })
-  //        .filter((result) => !_.contains(destinations, result))
-  //        .map((result) => path.relative(directory, result))
-  //        .then((results) => {
-  //          if (_.contains(_.flatten(results), filename)) {
-  //
-  //          }
-  //        })
-
-  var configpath = _path2['default'].join(directory, '.declutter.yml');
-
-  var totalFiles = 0;
+  var debug = _debug(pkg.name);
+  var configpath = path.join(directory, '.declutter.yml');
   var createdDirs = new Set();
+  var totalFiles = 0;
+
+  debug(directory + ': Decluttering ' + (opts.dryRun && '(DRY RUN)') + '...');
 
   return fs.readFileAsync(configpath, 'utf8').then(function (cfg) {
-    return _lodash2['default'].defaults(defaultDestinations, _jsYaml2['default'].safeLoad(cfg));
-  })['catch'](function () {
-    verbose('Failed to read config file ' + configpath);
+    return _.defaults(defaultDestinations, yaml.safeLoad(cfg));
+  }).catch(function () {
+    debug(directory + ': No config in ' + configpath + '; using defaults');
     return defaultDestinations;
   }).then(function (destinations) {
-    debug('Pattern/destination mapping:', destinations);
-    var globs = (0, _lodash2['default'])(destinations).pick(function (dest, pattern) {
-      return (0, _isGlob2['default'])(pattern);
+    debug(directory + ': Pattern/subdir mapping:\n' + ('' + stringify(destinations)));
+    var globs = _(destinations).pick(function (dest, pattern) {
+      return isGlob(pattern);
     }).mapKeys(function (dest, pattern) {
-      return _path2['default'].join(directory, pattern);
+      return path.join(directory, pattern);
     }).mapValues(function (dest) {
-      return _path2['default'].join(directory, dest);
+      return path.join(directory, dest);
     }).value();
-    return _bluebird2['default'].map(_lodash2['default'].keys(globs), function (globspec) {
+    return Promise.map(_.keys(globs), function (globspec) {
       var globdest = globs[globspec];
-      debug('Finding ' + globspec);
+      debug(directory + ': Searching for ' + globspec);
       return glob(globspec).tap(function (globpaths) {
-        console.log('Found ' + globpaths.length + ' files matching "' + globspec + '"');
+        debug(directory + ': ' + globpaths.length + ' files matching ' + ('"' + globspec + '"'));
       }).then(function (globpaths) {
         if (!opts.dryRun && globpaths.length && !createdDirs.has(globdest)) {
-          debug('Creating ' + globdest);
-          return mkdirp(globdest)['return'](globpaths);
+          debug(directory + ': +' + globdest + '/');
+          return mkdirp(globdest).return(globpaths);
         }
         return globpaths;
-      }).then(function (globpaths) {
+      }).tap(function (globpaths) {
         if (globpaths.length) {
           createdDirs.add(globdest);
         }
-        return globpaths;
       }).each(function (globpath) {
-        var destGlobpath = _path2['default'].join(globdest, _path2['default'].basename(globpath));
+        var destGlobpath = path.join(globdest, path.basename(globpath));
         debug(globpath + ' => ' + destGlobpath);
         if (!opts.dryRun) {
           return mv(globpath, destGlobpath);
@@ -211,30 +124,43 @@ function declutter(directory, opts) {
     }).then(function () {
       return fs.readdirAsync(directory);
     }).tap(function (filenames) {
-      verbose('Found ' + filenames.length + ' files remaining in ' + directory);
+      debug(directory + ': ' + filenames.length + ' files pre-filtering');
     }).map(function (filename) {
-      return _path2['default'].join(directory, filename);
+      return path.join(directory, filename);
     }).filter(function (filepath) {
-      return fs.lstatAsync(filepath).then(function (stat) {
-        return !stat.isSymbolicLink() && _path2['default'].basename(filepath) !== configFile;
-      })['catch'](function (err) {
-        verbose(err);
+      return fs.statAsync(filepath).then(function (stat) {
+        return !stat.isDirectory();
+      }).catch(function (err) {
+        debug(directory + ': Warning: ' + err);
         return false;
       });
     }).tap(function (filepaths) {
-      verbose('Found ' + filepaths.length + ' files to examine in ' + directory);
+      debug(directory + ': ' + filepaths.length + ' non-directories found');
+    }).filter(function (filepath) {
+      return fs.lstatAsync(filepath).then(function (stat) {
+        return !stat.isSymbolicLink() && path.basename(filepath) !== configFile;
+      }).catch(function (err) {
+        debug(directory + ': Warning: ' + err);
+        return false;
+      });
+    }).tap(function (filepaths) {
+      debug(directory + ': ' + filepaths.length + ' non-symbolic links and ' + 'config files found');
     }).filter(function (filepath) {
       return Boolean(allExts[extname(filepath)]);
     }).tap(function (filepaths) {
-      verbose('Found ' + filepaths.length + ' files matching known extensions' + (' in ' + directory));
+      debug(directory + ': ' + filepaths.length + ' files matching known ' + 'extensions to be moved');
     }).each(function (filepath) {
       var ext = extname(filepath);
-      var dest = _path2['default'].join(directory, destinations[allExts[ext]]);
-      var destFilepath = _path2['default'].join(dest, _path2['default'].basename(filepath));
-      debug(filepath + ' => ' + destFilepath);
+      var dirname = destinations[allExts[ext]];
+      var dest = path.join(directory, dirname);
+      var filename = path.basename(filepath);
+      var destFilepath = path.join(dest, filename);
+      var relativeSrc = path.relative(directory, filepath);
+      var relativeDest = path.relative(directory, destFilepath);
+      debug(directory + ': ' + relativeSrc + ' => ' + relativeDest);
       if (!createdDirs.has(dest)) {
+        debug(directory + ': +' + dirname + '/');
         if (!opts.dryRun) {
-          debug('Creating ' + dest);
           return mkdirp(dest).then(function () {
             createdDirs.add(dest);
             return mv(filepath, destFilepath);
@@ -247,17 +173,15 @@ function declutter(directory, opts) {
       }
     }).then(function (filepaths) {
       totalFiles += filepaths.length;
-      if (opts.dryRun) {
-        console.log('DRY RUN');
-      }
-
-      console.log('Total files moved: ' + totalFiles);
-      console.log('Total directories created: ' + createdDirs.size);
+      debug(directory + ': Files moved: ' + totalFiles);
+      debug(directory + ': Subdirs created: ' + createdDirs.size);
     });
-  })['catch'](function (err) {
-    console.log(err);
+  }).catch(function (err) {
+    debug('Error: ' + err);
   });
 }
 
-module.exports = exports['default'];
+declutter.version = pkg.version;
+
+module.exports = declutter;
 //# sourceMappingURL=index.js.map
