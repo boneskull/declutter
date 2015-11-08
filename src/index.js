@@ -117,38 +117,38 @@ function declutter(directory, opts) {
         .mapValues(dest => path.join(directory, dest))
         .value();
       return Promise.map(_.keys(globs), globspec => {
-          const globdest = globs[globspec];
-          debug(`${directory}: Searching for ${globspec}`);
-          return glob(globspec)
-            .tap(globpaths => {
-              debug(`${directory}: ${globpaths.length} files matching ` +
-                `"${globspec}"`);
-            })
-            .then(globpaths => {
-              if (!opts.dryRun &&
-                globpaths.length && !createdDirs.has(globdest)) {
-                debug(`${directory}: +${globdest}/`);
-                return mkdirp(globdest)
-                  .return(globpaths);
-              }
-              return globpaths;
-            })
-            .tap(globpaths => {
-              if (globpaths.length) {
-                createdDirs.add(globdest);
-              }
-            })
-            .each(globpath => {
-              const destGlobpath = path.join(globdest, path.basename(globpath));
-              debug(`${globpath} => ${destGlobpath}`);
-              if (!opts.dryRun) {
-                return mv(globpath, destGlobpath);
-              }
-            })
-            .then(globpaths => {
-              totalFiles += globpaths.length;
-            });
-        })
+        const globdest = globs[globspec];
+        debug(`${directory}: Searching for ${globspec}`);
+        return glob(globspec)
+          .tap(globpaths => {
+            debug(`${directory}: ${globpaths.length} files matching ` +
+              `"${globspec}"`);
+          })
+          .then(globpaths => {
+            if (!opts.dryRun &&
+              globpaths.length && !createdDirs.has(globdest)) {
+              debug(`${directory}: +${globdest}/`);
+              return mkdirp(globdest)
+                .return(globpaths);
+            }
+            return globpaths;
+          })
+          .tap(globpaths => {
+            if (globpaths.length) {
+              createdDirs.add(globdest);
+            }
+          })
+          .each(globpath => {
+            const destGlobpath = path.join(globdest, path.basename(globpath));
+            debug(`${globpath} => ${destGlobpath}`);
+            if (!opts.dryRun) {
+              return mv(globpath, destGlobpath);
+            }
+          })
+          .then(globpaths => {
+            totalFiles += globpaths.length;
+          });
+      })
         .then(() => fs.readdirAsync(directory))
         .tap(filenames => {
           debug(`${directory}: ${filenames.length} files pre-filtering`);
