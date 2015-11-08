@@ -8,7 +8,7 @@
 
 Categorizes files by type (archive, image, audio, document, etc.) and moves them into destination directories.
 
-Configurable via a `.declutter.yml` placed in the directory to declutter.  Globs supported.  Theoretically, you can configure it to move files *outside* of the directory, and not just into subdirs.
+Globs supported.  Theoretically, you can configure it to move files *outside* of the directory, and not just into subdirs.
 
 I wrote this because I have way too much crap in my `Downloads` folder.  
 
@@ -37,6 +37,10 @@ Options:
 
 ## Config File Syntax
 
+To configure declutter, you want to create a `.declutter` file in the directory you want decluttered.  This is a [YAML](https://en.wikipedia.org/wiki/Yaml) file, FWIW.
+
+The pattern is this; one on each line:
+
 ```yaml
 glob: destination
 ```
@@ -45,9 +49,29 @@ Example:
 
 ```yaml
 '*.torrent': torrent
+'*.coffee': ~/.Trash
 ```
 
-Any globs here will override the default settings, which are pulled from a swath of `foo-extension` modules on npm.
+This will move all BitTorrent (`*.torrent`) into the `torrent/` subdir, and all CoffeeScript (`*.coffee`) files into the Trash (OS X).  :wink:
+
+Any globs here *will override the default settings*, which are pulled from a swath of `foo-extension` modules on npm.
+
+### Defaults
+
+Extensions are sorted into categories; each category corresponds to a subdirectory.
+
+- 3D graphics: `3d/`
+- Documents: `document/`
+- Archives, installers, disk images: `archive/`
+- Images: `image/`
+- Audio: `audio/`
+- Text: `text/`
+- Apps: `application/`
+- Fonts: `font/`
+- Video: `video/`
+- Subtitles: `subs/`
+
+> TODO: Compile a list of source code file extensions; publish this as a module & use it to create a "code" category.
 
 ## Development
 
