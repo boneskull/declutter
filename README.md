@@ -80,6 +80,10 @@ Extensions are sorted into categories; each category corresponds to a subdirecto
 3.  Execute `npm run build`, which runs the source through [babel](https://babeljs.io).
 4.  (Optional) execute `npm link`.
 
+## Notes
+
+This would be useful when paired with fswatch, Gaze, etc.  Perhaps OS X folder actions and automator.  Then it would immediately move whatever you just downloaded into the configured directory.
+
 ## License
 
 © 2015 [Christopher Hiller](https://boneskull.com).  Licensed MIT.
