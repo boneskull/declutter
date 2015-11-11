@@ -43,7 +43,7 @@
     "bluebird": "^3.0.1",
     "compressed-extensions": "^1.0.1",
     "debug": "^2.2.0",
-    "glob": "^5.0.15",
+    "glob": "^6.0.0",
     "graceful-fs": "^4.1.2",
     "image-extensions": "^1.1.0",
     "is-glob": "^2.0.0",
