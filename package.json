@@ -60,7 +60,7 @@
   "preferGlobal": true,
   "devDependencies": {
     "babel-eslint": "^4.1.3",
-    "babel-preset-es2015": "^6.1.2",
+    "babel-preset-es2015": "^6.1.4",
     "chai": "^3.0.0",
     "chai-as-promised": "^5.1.0",
     "eslint": "^1.0.0",
