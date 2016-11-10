@@ -80,7 +80,7 @@
     "precommit": "^1.1.7",
     "sinon": "^1.14.1",
     "sinon-chai": "^2.8.0",
-    "stringify-object": "^2.3.1",
+    "stringify-object": "^3.0.0",
     "time-grunt": "^1.2.1"
   }
 }
